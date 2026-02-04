@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title id="doc-title">图片流导出工具 | Image Stream Tool</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style type="text/tailwindcss">
+      @layer components {
+        .img-card {
+          @apply break-inside-avoid mb-4 bg-white rounded-xl overflow-hidden shadow-sm transition-all duration-300 border border-slate-100;
+          .is-exporting & {
+            @apply shadow-none rounded-none mb-0 border-none;
+          }
+        }
+        .btn {
+          @apply px-4 py-2 rounded-lg font-medium transition-all active:scale-95 flex items-center gap-2 text-sm whitespace-nowrap select-none;
+        }
+        .control-panel {
+          @apply max-w-5xl mx-auto mb-6 sticky top-4 z-50 flex flex-wrap items-center gap-3 p-3 bg-white/70 backdrop-blur-xl rounded-2xl shadow-lg border border-white/50;
+        }
+      }
+
+      @media print {
+        #controls,
+        #exit-pure-btn,
+        .no-print {
+          display: none !important;
+        }
+        body {
+          background: white !important;
+          padding: 0 !important;
+        }
+        #preview-grid {
+          gap: 0 !important;
+        }
+      }
+    </style>
+  </head>
+  <body
+    class="bg-slate-50 min-h-screen p-4 md:p-8 transition-colors duration-500 [&.is-exporting]:bg-white [&.is-exporting]:p-0"
+  >
+    <header id="controls" class="control-panel [.is-exporting_&]:hidden">
+      <a
+        href="../index.html"
+        class="btn bg-slate-100 text-slate-600 hover:bg-slate-200 mr-2 border border-slate-200/50"
+      >
+        <span class="text-lg">←</span>
+        <span id="t-back">更多工具</span>
+      </a>
+
+      <div class="h-6 w-[1px] bg-slate-200 mx-1 hidden sm:block"></div>
+
+      <label
+        class="btn bg-blue-600 text-white hover:bg-blue-700 cursor-pointer shadow-blue-200 shadow-lg"
+      >
+        <span id="t-select">📂 选择图片</span>
+        <input
+          type="file"
+          id="file-input"
+          multiple
+          accept="image/*"
+          class="hidden"
+        />
+      </label>
+
+      <button
+        id="toggle-pure"
+        class="btn bg-white text-slate-700 hover:bg-slate-50 border border-slate-200"
+      >
+        <span id="t-pure">✨ 纯净模式</span>
+      </button>
+
+      <button
+        id="lang-switch"
+        class="btn bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-700"
+      >
+        <span class="text-xs font-bold uppercase" id="lang-label">en</span>
+      </button>
+
+      <button
+        id="print-btn"
+        class="btn bg-slate-900 text-white hover:bg-black ml-auto shadow-lg shadow-slate-200"
+      >
+        <span id="t-pdf">保存为 PDF</span>
+      </button>
+    </header>
+
+    <button
+      id="exit-pure-btn"
+      class="fixed bottom-8 right-8 w-14 h-14 bg-black/40 hover:bg-black/60 text-white rounded-full hidden [.is-exporting_&]:flex items-center justify-center backdrop-blur-md z-[1000] transition-all shadow-2xl border border-white/20"
+    >
+      <span class="text-xl">✕</span>
+    </button>
+
+    <main
+      id="preview-grid"
+      class="w-full mx-auto columns-2 sm:columns-3 lg:columns-4 xl:columns-5 gap-4 [.is-exporting_&]:gap-0"
+    ></main>
+
+    <script>
+      // --- 1. 国际化 (i18n) 配置 ---
+      const i18n = {
+        zh: {
+          title: "图片流导出工具",
+          back: "更多工具",
+          select: "📂 选择图片",
+          pure: "✨ 纯净模式",
+          pdf: "保存为 PDF",
+          empty: "图片列表为空，请先上传",
+          exitTip: "退出纯净模式 (Esc)",
+        },
+        en: {
+          title: "Image Stream Tool",
+          back: "More Tools",
+          select: "📂 Select Images",
+          pure: "✨ Pure Mode",
+          pdf: "Export PDF",
+          empty: "List is empty, please upload images first",
+          exitTip: "Exit Pure Mode (Esc)",
+        },
+      };
+
+      let currentLang =
+        localStorage.getItem("app_lang") ||
+        (navigator.language.startsWith("zh") ? "zh" : "en");
+
+      const updateLanguageUI = () => {
+        const t = i18n[currentLang];
+        document.getElementById("doc-title").innerText = t.title;
+        document.getElementById("t-back").innerText = t.back;
+        document.getElementById("t-select").innerText = t.select;
+        document.getElementById("t-pure").innerText = t.pure;
+        document.getElementById("t-pdf").innerText = t.pdf;
+        document.getElementById("exit-pure-btn").title = t.exitTip;
+        document.getElementById("lang-label").innerText =
+          currentLang === "zh" ? "EN" : "中文";
+        document.documentElement.lang = currentLang === "zh" ? "zh-CN" : "en";
+      };
+
+      document.getElementById("lang-switch").onclick = () => {
+        currentLang = currentLang === "zh" ? "en" : "zh";
+        localStorage.setItem("app_lang", currentLang);
+        updateLanguageUI();
+      };
+
+      // --- 2. 核心功能逻辑 ---
+      const fileInput = document.getElementById("file-input");
+      const grid = document.getElementById("preview-grid");
+      const body = document.body;
+
+      fileInput.onchange = (e) => {
+        const files = Array.from(e.target.files);
+        files.forEach((file) => {
+          if (!file.type.startsWith("image/")) return;
+          const url = URL.createObjectURL(file);
+          const card = document.createElement("div");
+          card.className = "img-card group";
+          card.innerHTML = `
+                    <img src="${url}" class="w-full block hover:scale-[1.02] transition-transform duration-500" onload="URL.revokeObjectURL('${url}')">
+                    <div class="p-2 text-[10px] text-slate-400 truncate bg-white [.is-exporting_&]:hidden border-t border-slate-50">
+                        ${file.name}
+                    </div>
+                `;
+          grid.appendChild(card);
+        });
+        fileInput.value = "";
+      };
+
+      const togglePureMode = (forceState) => {
+        if (grid.children.length === 0) return alert(i18n[currentLang].empty);
+        if (typeof forceState === "boolean") {
+          forceState
+            ? body.classList.add("is-exporting")
+            : body.classList.remove("is-exporting");
+        } else {
+          body.classList.toggle("is-exporting");
+        }
+      };
+
+      document.getElementById("toggle-pure").onclick = () => togglePureMode();
+      document.getElementById("exit-pure-btn").onclick = () =>
+        togglePureMode(false);
+
+      document.getElementById("print-btn").onclick = () => {
+        if (grid.children.length === 0) return alert(i18n[currentLang].empty);
+        body.classList.add("is-exporting");
+        setTimeout(() => {
+          window.print();
+        }, 300);
+      };
+
+      window.onkeydown = (e) => {
+        if (e.key === "Escape") togglePureMode(false);
+      };
+
+      updateLanguageUI();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Toolbox Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style type="text/tailwindcss">
+      @layer components {
+        .tool-card {
+          @apply bg-white border border-slate-200 p-5 rounded-2xl transition-all duration-300
+                hover:shadow-[0_20px_50px_rgba(0,0,0,0.05)] hover:-translate-y-1 flex flex-col gap-4;
+        }
+        .icon-box {
+          @apply w-12 h-12 rounded-xl flex items-center justify-center text-2xl
+                bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-100;
+        }
+      }
+      body {
+        background-color: #f8fafc;
+        background-image: radial-gradient(#e2e8f0 0.5px, transparent 0.5px);
+        background-size: 24px 24px;
+      }
+    </style>
+  </head>
+  <body class="min-h-screen text-slate-800 antialiased">
+    <div class="max-w-5xl mx-auto px-6 py-16">
+      <header
+        class="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6"
+      >
+        <div>
+          <h1 class="text-5xl font-black text-slate-900 tracking-tight mb-3">
+            Toolbox<span class="text-blue-600">.</span>
+          </h1>
+          <p class="text-slate-500 font-medium" id="t-subtitle">
+            Fast, Pure, and Efficient Web Tools
+          </p>
+        </div>
+
+        <div class="relative w-full md:w-72">
+          <span
+            class="absolute inset-y-0 left-3 flex items-center text-slate-400"
+            >🔍</span
+          >
+          <input
+            type="text"
+            id="search-input"
+            placeholder="搜索工具..."
+            class="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+          />
+        </div>
+      </header>
+
+      <div
+        id="tools-grid"
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+      ></div>
+
+      <div id="no-results" class="hidden py-20 text-center text-slate-400">
+        <p class="text-4xl mb-4">🏜️</p>
+        <p>没有找到相关工具</p>
+      </div>
+    </div>
+
+    <script>
+      // 实时搜索逻辑
+      const searchInput = document.getElementById("search-input");
+      const grid = document.getElementById("tools-grid");
+      const cards = grid.getElementsByClassName("tool-card");
+      const noResults = document.getElementById("no-results");
+
+      searchInput.addEventListener("input", (e) => {
+        const term = e.target.value.toLowerCase();
+        let hasVisible = false;
+
+        Array.from(cards).forEach((card) => {
+          const title = card.querySelector("h3").innerText.toLowerCase();
+          const path = card.querySelector(".path-text").innerText.toLowerCase();
+
+          if (title.includes(term) || path.includes(term)) {
+            card.style.display = "flex";
+            hasVisible = true;
+          } else {
+            card.style.display = "none";
+          }
+        });
+
+        noResults.style.display = hasVisible ? "none" : "block";
+      });
+    </script>
+  </body>
+</html>
