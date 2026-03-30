@@ -12,38 +12,7 @@
       content="image stream tool, image preview, PDF export, print to PDF, batch image viewer"
     />
     <title id="doc-title">图片流导出工具 | Image Stream Tool</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style type="text/tailwindcss">
-      @layer components {
-        .img-card {
-          @apply break-inside-avoid mb-4 bg-white rounded-xl overflow-hidden shadow-sm transition-all duration-300 border border-slate-100;
-          .is-exporting & {
-            @apply shadow-none rounded-none mb-0 border-none;
-          }
-        }
-        .btn {
-          @apply px-4 py-2 rounded-lg font-medium transition-all active:scale-95 flex items-center gap-2 text-sm whitespace-nowrap select-none;
-        }
-        .control-panel {
-          @apply max-w-5xl mx-auto mb-6 sticky top-4 z-50 flex flex-wrap items-center gap-3 p-3 bg-white/70 backdrop-blur-xl rounded-2xl shadow-lg border border-white/50;
-        }
-      }
-
-      @media print {
-        #controls,
-        #exit-pure-btn,
-        .no-print {
-          display: none !important;
-        }
-        body {
-          background: white !important;
-          padding: 0 !important;
-        }
-        #preview-grid {
-          gap: 0 !important;
-        }
-      }
-    </style>
+    <link rel="stylesheet" href="../assets/site.css" />
   </head>
   <body
     class="bg-slate-50 min-h-screen p-4 md:p-8 transition-colors duration-500 [&.is-exporting]:bg-white [&.is-exporting]:p-0"

@@ -15,6 +15,23 @@
 python3 generate-tools.py
 ```
 
+如果想把生成结果直接输出到某个目录，可以使用：
+
+```bash
+python3 generate-tools.py -o dist
+```
+
+CSS 现在通过 Tailwind CLI 构建，不再使用运行时 CDN：
+
+```bash
+npm install
+npm run build:css
+```
+
+`assets/site.css` 是构建产物，不需要提交到仓库。GitHub Pages 会在 CI 里自动生成；本地如果要预览最新样式，先运行一次 `npm run build:css`。
+
+CI 只会上传 `dist/` 里的发布文件，不再把整个仓库作为 Pages artifact。
+
 ## tools.json
 
 `tools.json` 默认放在项目根目录，也就是当前仓库的 `/mnt/data/Project/tools/tools.json`。

@@ -245,10 +245,13 @@ def normalize_external_tool(tool_id, entry):
     }
 
 
-def discover_local_tools():
+def discover_local_tools(out_dir=None):
     discovered = {}
+    excluded_dir_names = get_excluded_dir_names(out_dir)
     folders = sorted([
-        path for path in TOOLS_DIR.iterdir() if path.is_dir() and path.name != 'assets'
+        path
+        for path in TOOLS_DIR.iterdir()
+        if path.is_dir() and path.name not in excluded_dir_names
     ])
 
     print('🔍 正在扫描工具目录并注入脚本...')
@@ -259,7 +262,9 @@ def discover_local_tools():
             continue
 
         updated_sub_content = process_head_injection(index_path)
-        with open(index_path, 'w', encoding='utf-8') as f:
+        target_path = resolve_output_path(index_path, out_dir)
+        target_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(target_path, 'w', encoding='utf-8') as f:
             f.write(updated_sub_content)
 
         title_parser = TitleParser()
@@ -299,11 +304,78 @@ def build_tools_list(discovered, config_entries):
     return ordered_tools
 
 
+def parse_args(args):
+    out_dir = None
+    target_index = INDEX_FILE
+    positional_target = None
+    i = 0
+
+    while i < len(args):
+        arg = args[i]
+        if arg in ('-o', '--out-dir'):
+            if i + 1 >= len(args):
+                raise ValueError(f'{arg} 需要一个目录参数')
+            out_dir = Path(args[i + 1])
+            i += 2
+            continue
+        if arg.startswith('--out-dir='):
+            out_dir = Path(arg.split('=', 1)[1])
+            i += 1
+            continue
+        if arg.startswith('-o='):
+            out_dir = Path(arg.split('=', 1)[1])
+            i += 1
+            continue
+        if arg.startswith('-'):
+            raise ValueError(f'不支持的参数: {arg}')
+        if positional_target is not None:
+            raise ValueError('只能提供一个目标首页路径')
+        positional_target = Path(arg)
+        i += 1
+
+    if out_dir is not None and positional_target is not None:
+        raise ValueError('不能同时使用位置参数和 -o/--out-dir')
+
+    if out_dir is not None:
+        target_index = out_dir / INDEX_FILE
+    elif positional_target is not None:
+        target_index = positional_target
+
+    return target_index, out_dir
+
+
+def get_excluded_dir_names(out_dir):
+    excluded = {'assets'}
+    if out_dir is None:
+        return excluded
+
+    try:
+        relative_out_dir = out_dir.resolve().relative_to(TOOLS_DIR.resolve())
+    except ValueError:
+        relative_out_dir = out_dir
+
+    if relative_out_dir.parts:
+        excluded.add(relative_out_dir.parts[0])
+    return excluded
+
+
+def resolve_output_path(source_path, out_dir):
+    if out_dir is None:
+        return source_path
+    return out_dir / source_path
+
+
+try:
+    target_index, out_dir = parse_args(argv[1:])
+except ValueError as exc:
+    print(f'❌ 参数错误: {exc}')
+    raise SystemExit(1)
+
 if not INDEX_FILE.exists():
     print(f'❌ 找不到 {INDEX_FILE}')
     raise SystemExit(1)
 
-discovered_tools = discover_local_tools()
+discovered_tools = discover_local_tools(out_dir=out_dir)
 
 try:
     config_entries = read_tools_config(TOOLS_CONFIG_FILE)
@@ -320,7 +392,7 @@ main_page_with_script = process_head_injection(INDEX_FILE)
 rewriter = IndexRewriter(all_cards_html)
 rewriter.feed(main_page_with_script)
 
-target_index = Path(argv[1]) if len(argv) > 1 else INDEX_FILE
+target_index.parent.mkdir(parents=True, exist_ok=True)
 with open(target_index, 'w', encoding='utf-8') as f:
     f.write(preserve_doctype(main_page_with_script, rewriter.output))
 

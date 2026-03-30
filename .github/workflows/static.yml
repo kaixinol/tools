@@ -25,10 +25,26 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Generate Tools Index
-        run: |
-          python generate-tools.py
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
 
+      - name: Install CSS build dependencies
+        run: npm ci
+
+      - name: Build Pages Artifact
+        run: |
+          rm -rf dist
+          mkdir -p dist/assets
+          for dir in */; do
+            if [ -f "${dir}index.html" ]; then
+              cp -R "$dir" dist/
+            fi
+          done
+          python generate-tools.py -o dist
+          npx tailwindcss -i ./assets/styles.css -o ./dist/assets/site.css --minify
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
@@ -36,7 +52,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.'
+          path: './dist'
 
       - name: Deploy to GitHub Pages
         id: deployment

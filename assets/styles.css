@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+@source "../index.html";
+@source "../image-stream-generator/index.html";
+@source "../generate-tools.py";
+
+@layer components {
+  .tool-card {
+    @apply flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(0,0,0,0.05)];
+  }
+
+  .icon-box {
+    @apply flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-2xl text-white shadow-lg shadow-blue-100;
+  }
+
+  .img-card {
+    @apply mb-4 break-inside-avoid overflow-hidden rounded-xl border border-slate-100 bg-white shadow-sm transition-all duration-300;
+  }
+
+  body.is-exporting .img-card {
+    @apply mb-0 rounded-none border-none shadow-none;
+  }
+
+  .btn {
+    @apply flex select-none items-center gap-2 whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium transition-all active:scale-95;
+  }
+
+  .control-panel {
+    @apply sticky top-4 z-50 mx-auto mb-6 flex max-w-5xl flex-wrap items-center gap-3 rounded-2xl border border-white/50 bg-white/70 p-3 shadow-lg backdrop-blur-xl;
+  }
+}
+
+body.hub-page {
+  background-color: #f8fafc;
+  background-image: radial-gradient(#e2e8f0 0.5px, transparent 0.5px);
+  background-size: 24px 24px;
+}
+
+@media print {
+  #controls,
+  #exit-pure-btn,
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: white !important;
+    padding: 0 !important;
+  }
+
+  #preview-grid {
+    gap: 0 !important;
+  }
+}

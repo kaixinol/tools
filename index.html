@@ -12,26 +12,9 @@
       content="toolbox, web tools, 在线工具, 小工具, utility, resources"
     />
     <title>Toolbox Hub</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style type="text/tailwindcss">
-      @layer components {
-        .tool-card {
-          @apply bg-white border border-slate-200 p-5 rounded-2xl transition-all duration-300
-                hover:shadow-[0_20px_50px_rgba(0,0,0,0.05)] hover:-translate-y-1 flex flex-col gap-4;
-        }
-        .icon-box {
-          @apply w-12 h-12 rounded-xl flex items-center justify-center text-2xl
-                bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-100;
-        }
-      }
-      body {
-        background-color: #f8fafc;
-        background-image: radial-gradient(#e2e8f0 0.5px, transparent 0.5px);
-        background-size: 24px 24px;
-      }
-    </style>
+    <link rel="stylesheet" href="./assets/site.css" />
   </head>
-  <body class="min-h-screen text-slate-800 antialiased">
+  <body class="hub-page min-h-screen text-slate-800 antialiased">
     <div class="max-w-5xl mx-auto px-6 py-16">
       <header
         class="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6"
