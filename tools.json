@@ -1,0 +1,12 @@
+{
+  "image-stream-generator": {
+    "icon": "🖼️",
+    "type": "Generator"
+  },
+  "china-university-entity-list": {
+    "title": "中国高校实体清单",
+    "url": "https://kaixinol.github.io/china-university-entity-list/",
+    "icon": "🎓",
+    "type": "Reference"
+  }
+}
