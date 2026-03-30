@@ -23,17 +23,17 @@ GOOGLE_SCRIPT = """
 
 CARD_TEMPLATE = """
         <a href="{href}" class="tool-card group"{target_attr}{rel_attr}>
-            <div class="flex items-start justify-between gap-4">
+            <div class="tool-card-header">
                 <div class="icon-box group-hover:scale-110 transition-transform">{icon}</div>
-                <span class="text-[10px] font-bold uppercase tracking-widest text-slate-300 group-hover:text-blue-400 transition-colors">{badge}</span>
+                <span class="tool-card-badge">{badge}</span>
             </div>
-            <div>
-                <h3 class="text-xl font-bold text-slate-800 mb-1 group-hover:text-blue-600 transition-colors">{title}</h3>
-                <p class="path-text text-xs text-slate-400 font-mono italic">{path_text}</p>
+            <div class="tool-card-body">
+                <h3 class="tool-card-title">{title}</h3>
+                <p class="path-text">{path_text}</p>
             </div>
-            <div class="mt-2 flex items-center text-sm font-semibold text-blue-500">
+            <div class="tool-card-cta">
                 <span>{cta}</span>
-                <svg class="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="tool-card-cta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
                 </svg>
             </div>

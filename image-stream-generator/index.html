@@ -18,19 +18,14 @@
     class="bg-slate-50 min-h-screen p-4 md:p-8 transition-colors duration-500 [&.is-exporting]:bg-white [&.is-exporting]:p-0"
   >
     <header id="controls" class="control-panel [.is-exporting_&]:hidden">
-      <a
-        href="../index.html"
-        class="btn bg-slate-100 text-slate-600 hover:bg-slate-200 mr-2 border border-slate-200/50"
-      >
+      <a href="../index.html" class="btn control-link">
         <span class="text-lg">←</span>
         <span id="t-back">更多工具</span>
       </a>
 
-      <div class="h-6 w-[1px] bg-slate-200 mx-1 hidden sm:block"></div>
+      <div class="control-divider"></div>
 
-      <label
-        class="btn bg-blue-600 text-white hover:bg-blue-700 cursor-pointer shadow-blue-200 shadow-lg"
-      >
+      <label class="btn upload-btn">
         <span id="t-select">📂 选择图片</span>
         <input
           type="file"
@@ -41,39 +36,24 @@
         />
       </label>
 
-      <button
-        id="toggle-pure"
-        class="btn bg-white text-slate-700 hover:bg-slate-50 border border-slate-200"
-      >
+      <button id="toggle-pure" class="btn secondary-btn">
         <span id="t-pure">✨ 纯净模式</span>
       </button>
 
-      <button
-        id="lang-switch"
-        class="btn bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-700"
-      >
+      <button id="lang-switch" class="btn lang-btn">
         <span class="text-xs font-bold uppercase" id="lang-label">en</span>
       </button>
 
-      <button
-        id="print-btn"
-        class="btn bg-slate-900 text-white hover:bg-black ml-auto shadow-lg shadow-slate-200"
-      >
+      <button id="print-btn" class="btn primary-action-btn">
         <span id="t-pdf">保存为 PDF</span>
       </button>
     </header>
 
-    <button
-      id="exit-pure-btn"
-      class="fixed bottom-8 right-8 w-14 h-14 bg-black/40 hover:bg-black/60 text-white rounded-full hidden [.is-exporting_&]:flex items-center justify-center backdrop-blur-md z-[1000] transition-all shadow-2xl border border-white/20"
-    >
+    <button id="exit-pure-btn" class="floating-close-btn [.is-exporting_&]:flex">
       <span class="text-xl">✕</span>
     </button>
 
-    <main
-      id="preview-grid"
-      class="w-full mx-auto columns-2 sm:columns-3 lg:columns-4 xl:columns-5 gap-4 [.is-exporting_&]:gap-0"
-    ></main>
+    <main id="preview-grid" class="preview-grid [.is-exporting_&]:gap-0"></main>
 
     <script>
       // --- 1. 国际化 (i18n) 配置 ---
@@ -134,8 +114,8 @@
           const card = document.createElement("div");
           card.className = "img-card group";
           card.innerHTML = `
-                    <img src="${url}" class="w-full block hover:scale-[1.02] transition-transform duration-500" onload="URL.revokeObjectURL('${url}')">
-                    <div class="p-2 text-[10px] text-slate-400 truncate bg-white [.is-exporting_&]:hidden border-t border-slate-50">
+                    <img src="${url}" class="preview-image" onload="URL.revokeObjectURL('${url}')">
+                    <div class="preview-caption">
                         ${file.name}
                     </div>
                 `;

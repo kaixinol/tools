@@ -15,40 +15,32 @@
     <link rel="stylesheet" href="./assets/site.css" />
   </head>
   <body class="hub-page min-h-screen text-slate-800 antialiased">
-    <div class="max-w-5xl mx-auto px-6 py-16">
-      <header
-        class="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6"
-      >
+    <div class="page-shell">
+      <header class="page-header">
         <div>
-          <h1 class="text-5xl font-black text-slate-900 tracking-tight mb-3">
+          <h1 class="page-title">
             Toolbox<span class="text-blue-600">.</span>
           </h1>
-          <p class="text-slate-500 font-medium" id="t-subtitle">
+          <p class="page-subtitle" id="t-subtitle">
             Fast, Pure, and Efficient Web Tools
           </p>
         </div>
 
-        <div class="relative w-full md:w-72">
-          <span
-            class="absolute inset-y-0 left-3 flex items-center text-slate-400"
-            >🔍</span
-          >
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
           <input
             type="text"
             id="search-input"
             placeholder="搜索工具..."
-            class="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+            class="search-input"
           />
         </div>
       </header>
 
-      <div
-        id="tools-grid"
-        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-      ></div>
+      <div id="tools-grid" class="tools-grid"></div>
 
-      <div id="no-results" class="hidden py-20 text-center text-slate-400">
-        <p class="text-4xl mb-4">🏜️</p>
+      <div id="no-results" class="empty-state">
+        <p class="empty-state-emoji">🏜️</p>
         <p>没有找到相关工具</p>
       </div>
     </div>
