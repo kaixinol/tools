@@ -8,5 +8,11 @@
     "url": "https://kaixinol.github.io/china-university-entity-list/",
     "icon": "🎓",
     "type": "Reference"
+  },
+  "webcodecs-compressor": {
+    "title": "视频压缩器 (MediaBunny & WebCodecs)",
+    "url": "https://kaixinol.github.io/webcodecs-compressor/",
+    "icon": "📹",
+    "type": "Media"
   }
 }
