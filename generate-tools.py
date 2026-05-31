@@ -245,6 +245,56 @@ def normalize_external_tool(tool_id, entry):
     }
 
 
+def parse_github_repo_from_url(url):
+    if not url:
+        return None
+
+    url = url.strip().rstrip('/')
+    if url.startswith('https://'):
+        url = url[len('https://'):]
+    elif url.startswith('http://'):
+        url = url[len('http://'):]
+
+    if url.startswith('github.com/kaixinol/'):
+        parts = url.split('/')
+        return '/'.join(parts[1:3]) if len(parts) >= 3 else None
+
+    parts = url.split('/')
+    if len(parts) >= 2 and parts[0].endswith('.github.io'):
+        owner = parts[0][:-len('.github.io')]
+        return f'{owner}/{parts[1]}'
+
+    return None
+
+
+def build_github_search_url(excluded_repos):
+    from urllib.parse import quote_plus
+
+    query_parts = ['owner:kaixinol', 'topic:toolkit']
+    query_parts.extend(f'NOT {repo}' for repo in excluded_repos)
+    query = ' '.join(query_parts)
+    return 'https://github.com/search?q=' + quote_plus(query)
+
+
+def build_more_tools_card(config_entries):
+    repos = []
+    for entry in config_entries.values():
+        repo = parse_github_repo_from_url(entry.get('url'))
+        if repo and repo not in repos:
+            repos.append(repo)
+
+    return {
+        'key': 'external:more-tools',
+        'title': '更多工具',
+        'href': build_github_search_url(repos),
+        'path_text': 'GitHub 工具搜索',
+        'icon': '✨',
+        'badge': 'UTILITY',
+        'cta': '探索更多',
+        'external': True,
+    }
+
+
 def discover_local_tools(out_dir=None):
     discovered = {}
     excluded_dir_names = get_excluded_dir_names(out_dir)
@@ -301,6 +351,7 @@ def build_tools_list(discovered, config_entries):
             continue
         ordered_tools.append(normalize_local_tool(folder, {}, meta['title']))
 
+    ordered_tools.append(build_more_tools_card(config_entries))
     return ordered_tools
 
 
